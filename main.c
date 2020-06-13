@@ -70,6 +70,7 @@ int main(int argc, char *argv[]) {
 				write(fifo_fd, str, bytes_read);
 				int reads = read(fifo_in, &tmp, MAX_SIZE * 10);
 				write(1, &tmp, reads);
+				tmp[0] = '\0';
 			}
 			if (b) {
 				printf("\nargus $ ");
@@ -82,6 +83,7 @@ int main(int argc, char *argv[]) {
 		write(fifo_fd, buffer, sizeof(char)*k);
 		int reads = read(fifo_in, &tmp, MAX_SIZE * 10);
 		write(1, &tmp, reads);
+		tmp[0] = '\0';
 	}
 	close(fifo_fd);
 	close(fifo_in);

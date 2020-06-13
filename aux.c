@@ -198,6 +198,7 @@ const char * geraMensagem(int i) {
 	strcat(texto,"\n");
 	char *text = malloc(sizeof(char)*(strlen(texto)+1));
 	strcpy(text, texto);
+	text[strlen(text)] = '\0';
 	return text;
 }
 
