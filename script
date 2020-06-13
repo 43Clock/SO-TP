@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "Executando alguns comandos"
+./argus -e "ls -la"
+./argus -e "cat /etc/passwd | wc "
+./argus -e "grep -v ˆ# /etc/passwd | cut -f7 -d: | uniq | wc -l"
