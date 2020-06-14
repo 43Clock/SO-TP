@@ -2,19 +2,19 @@ CC = gcc
 
 CFLAGS = -g -Wall
 
-all: argus servidor
+all: argus argusd
 	test -e fifo || mkfifo fifo
 	test -e fifout || mkfifo fifout
 
 argus:
-	$(CC) $(CFLAGS) main.c -o argus
+	$(CC) $(CFLAGS) argus.c -o argus
 
-servidor:
-	$(CC) $(CFLAGS) servidor.c aux.c aux.h -o servidor
+argusd:
+	$(CC) $(CFLAGS) argusd.c aux.c aux.h -o argusd
 
 clean:
 	rm argus
-	rm servidor
+	rm argusd
 	unlink fifo
 	unlink fifout
 	rm log*

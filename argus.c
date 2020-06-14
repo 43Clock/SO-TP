@@ -9,10 +9,6 @@
 
 #define MAX_SIZE 1024
 
-void sigint_handler(int signum) {
-	printf("\nExiting\n");
-	exit(0);
-}
 
 int isExecute(char *str) {
 	if (strcmp(str, "-i") == 0) return 1;
@@ -43,7 +39,6 @@ int main(int argc, char *argv[]) {
 		perror("open");
 		return -1;
 	}
-	//signal(SIGINT,sigint_handler);
 
 	int i;
 	int k = 0;

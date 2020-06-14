@@ -39,6 +39,12 @@ void timeout_handler(int signum) {
 	_exit(1);
 }
 
+void timeout_handler_pipe_aux(int signum) {
+	for (int i = 0; i < num_pids; i++)
+		kill(pids[i], SIGUSR1);
+	_exit(1);
+}
+
 void sigchld_handler(int signum) {
 	int status;
 	int cpid = wait(&status);
@@ -46,7 +52,7 @@ void sigchld_handler(int signum) {
 		Lista temp;
 		temp = removeFromId(&executing->lista, cpid);
 		executing->total--;
-		addNode(&finished->lista, temp->id, temp->order, WEXITSTATUS(status), strdup(temp->comando));
+		addNode(&finished->lista, temp->id, temp->order, WEXITSTATUS(status), temp->comando);
 		finished->total++;
 		int pos = lseek(logs_fd, 0, SEEK_END);
 		lseek(idx_fd, 0, SEEK_END);
@@ -156,6 +162,7 @@ void mypiping(char *argv, int logs_fd, int idx_fd) {
 	num_args = parser(command, argv);
 	int p[num_args][2];
 	num_pids = 0;
+	double left;
 
 	if (signal(SIGCHLD, SIG_DFL) == SIG_ERR) {
 		perror("signal");
@@ -165,7 +172,7 @@ void mypiping(char *argv, int logs_fd, int idx_fd) {
 		perror("signal");
 		exit(-1);
 	}
-	if (signal(SIGALRM, timeout_handler) == SIG_ERR) {
+	if (signal(SIGALRM, timeout_handler_pipe_aux) == SIG_ERR) {
 		perror("signal");
 		exit(-1);
 	}
@@ -255,7 +262,8 @@ void mypiping(char *argv, int logs_fd, int idx_fd) {
 					exec_command(command[i]);
 					_exit(0);
 				default:
-					alarm(alarm(0));
+					left = alarm(0);
+					alarm(left);
 					close(p[i][1]);
 					close(p[i - 1][0]);
 					pids[num_pids++] = pid;
@@ -273,7 +281,7 @@ int hasSpace(char * s) {
 }
 
 
-int main() { //fazer a cena dos perrors
+int main() {
 	char buf[MAX_SIZE];
 	int fifo_fd, j, fifo_out;
 	logs_fd = open("log", O_CREAT | O_RDWR | O_TRUNC, 0666);
@@ -330,17 +338,17 @@ int main() { //fazer a cena dos perrors
 						_exit(0);
 					}
 					else {
-						addNode(&executing->lista, forks, hist->total + 1, -1, strdup(exec));
+						addNode(&executing->lista, forks, hist->total + 1, -1, exec);
 						executing->total++;
 						if (signal(SIGCHLD, sigchld_handler) == SIG_ERR) {
 							perror("signal");
 							exit(-1);
 						}
-						addNode(&hist->lista, forks, hist->total + 1, -1, strdup(exec));
+						addNode(&hist->lista, forks, hist->total + 1, -1, exec);
 						hist->total++;
 						const char * t3 = geraMensagem(hist->total);
 						write(fifo_out, t3, strlen(t3));
-						//free((char*)texto);
+						//free((char*)t3);
 					}
 				}
 				else {
@@ -349,11 +357,11 @@ int main() { //fazer a cena dos perrors
 				break;
 			case 4:
 				if (executing -> total != 0) {
-					const char *t4 = imprimeLista(executing->lista);
+					const char *t4 = imprimeLista(&executing->lista);
 					if (strlen(t4) == 0) write(fifo_out, "", 1);
 					else {
 						write(fifo_out, t4, strlen(t4));
-						//free((char*)texto);
+						//free((char*)t4);
 					}
 				}
 				else write(fifo_out, "", 1);
@@ -366,11 +374,11 @@ int main() { //fazer a cena dos perrors
 				break;
 			case 6:
 				if (finished -> total != 0) {
-					const char *t6 = imprimeFinished(finished->lista);
+					const char *t6 = imprimeFinished(&finished->lista);
 					if (strlen(t6) == 0) write(fifo_out, "", 1);
 					else {
 						write(fifo_out, t6, strlen(t6));
-						//sfree((char*)texto);
+						//free((char*)t6);
 					}
 				}
 				else write(fifo_out, "", 1);
@@ -419,4 +427,4 @@ int main() { //fazer a cena dos perrors
 	close(logs_fd);
 	close(idx_fd);
 	close(fifo_fd);
-} //Fechar todos os descritores de leitura ?????????
+}

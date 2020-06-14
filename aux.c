@@ -22,7 +22,7 @@ Lista newNode(int id,int order,int tipo,char *comando) {
 	new->id = id;
 	new->order = order;
 	new->tipo = tipo;
-	new->comando = comando;
+	new->comando = strdup(comando);
 	new-> prox = NULL;
 	return new;
 }
@@ -99,32 +99,59 @@ int howManyDigits(int n){
 	return r;
 }
 
-const char* imprimeLista(Lista l){
+char* itoa(int i, char b[]) {
+	char const digit[] = "0123456789";
+	char* p = b;
+	if (i < 0) {
+		*p++ = '-';
+		i *= -1;
+	}
+	int shifter = i;
+	do {
+		++p;
+		shifter = shifter / 10;
+	} while (shifter);
+	*p = '\0';
+	do {
+		*--p = digit[i % 10];
+		i = i / 10;
+	} while (i);
+	return b;
+}
+
+const char* imprimeLista(Lista *l){
 	if(l==NULL) return "";
-	Lista aux = l;
+	Lista aux = *l;
 	int tam = 0;
 	while(aux){
 		tam+=strlen(aux->comando)+3+howManyDigits(aux->order);
 		aux=aux->prox;
 	}
 	tam++;
-	char *buf = malloc(sizeof(char)*tam);
-	aux = l;
+	char *buf = (char *) malloc(sizeof(char)*(tam+1));
+	aux = *l;
 	while(aux){
-		sprintf(buf+strlen(buf),"#%d: %s\n",aux->order,aux->comando);
+		char num[MAX_SIZE];
+		itoa(aux->order,num);
+		strcat(buf,"#");
+		strcat(buf,num);
+		strcat(buf,": ");
+		strcat(buf,strdup(aux->comando));
+		strcat(buf,"\n");
 		aux = aux->prox;
 	}
+	buf[strlen(buf)] = '\0';
 	return buf;
 }
 
-const char* imprimeFinished(Lista l){
+const char* imprimeFinished(Lista *l){
 	if(l == NULL) return "";
 	const char* t0 = "concluida:";
 	const char* t1 = "max execução:";
 	const char* t2 = "max inactividade:";
 	const char* t3 = "terminada:";
 	const char* t4 = "something went wrong:";
-	Lista aux = l;
+	Lista aux = *l;
 	int tam = 0;
 	while(aux){
 		tam += strlen(aux->comando)+4+howManyDigits(aux->order);
@@ -137,7 +164,7 @@ const char* imprimeFinished(Lista l){
 	}
 	tam++;
 	char *buf = malloc(sizeof(char)*tam);
-	aux = l;
+	aux = *l;
 	while(aux){
 		if(aux->tipo == 0) sprintf(buf+strlen(buf),"#%d: %s %s\n",aux->order,t0,aux->comando);
 		else if(aux->tipo == 1) sprintf(buf+strlen(buf),"#%d: %s %s\n",aux->order,t1,aux->comando);
@@ -167,26 +194,6 @@ int chooseExecute(char *str) {
 	if (strcmp(str, "ajuda") == 0 || strcmp(str, "-h") == 0) return 7;
 	if (strcmp(str, "output") == 0 || strcmp(str, "-o") == 0) return 8;
 	return 0;
-}
-
-char* itoa(int i, char b[]) {
-	char const digit[] = "0123456789";
-	char* p = b;
-	if (i < 0) {
-		*p++ = '-';
-		i *= -1;
-	}
-	int shifter = i;
-	do {
-		++p;
-		shifter = shifter / 10;
-	} while (shifter);
-	*p = '\0';
-	do {
-		*--p = digit[i % 10];
-		i = i / 10;
-	} while (i);
-	return b;
 }
 
 

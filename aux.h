@@ -26,5 +26,5 @@ int getPosFromOrder(Lista l,int order);
 const char * geraMensagem(int i);
 const char *geraAjuda1();
 const char *geraAjuda2();
-const char* imprimeLista(Lista l);
-const char* imprimeFinished(Lista l);
+const char* imprimeLista(Lista *l);
+const char* imprimeFinished(Lista *l);
