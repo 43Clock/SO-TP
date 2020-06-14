@@ -4,6 +4,10 @@ echo "Executando alguns comandos"
 ./argus -e "ls -la"
 sleep 0.1 
 ./argus -e "cat /etc/passwd | wc "
+sleep 0.1
+./argus -e "date"
+sleep 0.1
+./argus -e "pwd"
 sleep 0.1 
 ./argus -e "grep -v ˆ# /etc/passwd | cut -f7 -d: | uniq | wc -l"
 sleep 0.1 
@@ -27,4 +31,6 @@ sleep 0.1
 sleep 0.1
 ./argus -i 0
 sleep 0.1
-./argus -e "tail -f /dev/null | cat | wc" 
+./argus -e "tail -f /dev/null | cat | wc"
+sleep 0.1 
+./argus -e "ls | cat | tail -f /dev/null"

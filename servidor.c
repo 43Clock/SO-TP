@@ -89,15 +89,15 @@ int mysystem(char *command, int logs_fd, int idx_fd) {
 	}
 
 	exec_args[i] = NULL;
-	if(signal(SIGCHLD, SIG_DFL) == SIG_ERR) {
+	if (signal(SIGCHLD, SIG_DFL) == SIG_ERR) {
 		perror("signal");
 		exit(-1);
 	}
-	if(signal(SIGALRM, timeout_handler) == SIG_ERR) {
+	if (signal(SIGALRM, timeout_handler) == SIG_ERR) {
 		perror("signal");
 		exit(-1);
 	}
-	if(signal(SIGUSR1, sigtermallchildren_handler) == SIG_ERR) {
+	if (signal(SIGUSR1, sigtermallchildren_handler) == SIG_ERR) {
 		perror("signal");
 		exit(-1);
 	}
@@ -157,15 +157,15 @@ void mypiping(char *argv, int logs_fd, int idx_fd) {
 	int p[num_args][2];
 	num_pids = 0;
 
-	if(signal(SIGCHLD, SIG_DFL) == SIG_ERR) {
+	if (signal(SIGCHLD, SIG_DFL) == SIG_ERR) {
 		perror("signal");
 		exit(-1);
 	}
-	if(signal(SIGUSR1, sigtermallchildren_handler2) == SIG_ERR) {
+	if (signal(SIGUSR1, sigtermallchildren_handler2) == SIG_ERR) {
 		perror("signal");
 		exit(-1);
 	}
-	if(signal(SIGALRM, timeout_handler) == SIG_ERR) {
+	if (signal(SIGALRM, timeout_handler) == SIG_ERR) {
 		perror("signal");
 		exit(-1);
 	}
@@ -184,11 +184,11 @@ void mypiping(char *argv, int logs_fd, int idx_fd) {
 		_exit(WEXITSTATUS(status));
 	}
 	else if (filho == 0) {
-		if(signal(SIGUSR1, sigtermallchildren_handler) == SIG_ERR) {
+		if (signal(SIGUSR1, sigtermallchildren_handler) == SIG_ERR) {
 			perror("signal");
 			exit(-1);
 		}
-		if(signal(SIGALRM, timeout_handler_pipe) == SIG_ERR) {
+		if (signal(SIGALRM, timeout_handler_pipe) == SIG_ERR) {
 			perror("signal");
 			exit(-1);
 		}
@@ -332,15 +332,15 @@ int main() { //fazer a cena dos perrors
 					else {
 						addNode(&executing->lista, forks, hist->total + 1, -1, strdup(exec));
 						executing->total++;
-						if(signal(SIGCHLD, sigchld_handler) == SIG_ERR) {
+						if (signal(SIGCHLD, sigchld_handler) == SIG_ERR) {
 							perror("signal");
 							exit(-1);
 						}
 						addNode(&hist->lista, forks, hist->total + 1, -1, strdup(exec));
 						hist->total++;
-						texto = geraMensagem(hist->total);
-						write(fifo_out, texto, strlen(texto));
-						free((char*)texto);
+						const char * t3 = geraMensagem(hist->total);
+						write(fifo_out, t3, strlen(t3));
+						//free((char*)texto);
 					}
 				}
 				else {
@@ -349,10 +349,12 @@ int main() { //fazer a cena dos perrors
 				break;
 			case 4:
 				if (executing -> total != 0) {
-					texto = imprimeLista(executing->lista);
-					if (strlen(texto) == 0) write(fifo_out, "", 1);
-					write(fifo_out, texto, strlen(texto));
-					free((char*)texto);
+					const char *t4 = imprimeLista(executing->lista);
+					if (strlen(t4) == 0) write(fifo_out, "", 1);
+					else {
+						write(fifo_out, t4, strlen(t4));
+						//free((char*)texto);
+					}
 				}
 				else write(fifo_out, "", 1);
 				break;
@@ -364,10 +366,12 @@ int main() { //fazer a cena dos perrors
 				break;
 			case 6:
 				if (finished -> total != 0) {
-					texto = imprimeFinished(finished->lista);
-					if (strlen(texto) == 0) write(fifo_out, "", 1);
-					write(fifo_out, texto, strlen(texto));
-					free((char*)texto);
+					const char *t6 = imprimeFinished(finished->lista);
+					if (strlen(t6) == 0) write(fifo_out, "", 1);
+					else {
+						write(fifo_out, t6, strlen(t6));
+						//sfree((char*)texto);
+					}
 				}
 				else write(fifo_out, "", 1);
 				break;
@@ -375,7 +379,7 @@ int main() { //fazer a cena dos perrors
 				if (command[0] != '-') texto = geraAjuda1();
 				else texto = geraAjuda2();
 				write(fifo_out, texto, strlen(texto));
-				free((char*)texto);
+				//free((char*)texto);
 				break;
 			case 8:
 				if (getTipoFromOrder(finished->lista, atoi(exec)) == 0) {
