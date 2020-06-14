@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#include "argus.h"
 
 #define MAX_SIZE 1024
 

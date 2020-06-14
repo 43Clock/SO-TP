@@ -129,6 +129,7 @@ const char* imprimeLista(Lista *l){
 	}
 	tam++;
 	char *buf = (char *) malloc(sizeof(char)*(tam+1));
+	buf[0] = '\0';
 	aux = *l;
 	while(aux){
 		char num[MAX_SIZE];
